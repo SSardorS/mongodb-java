@@ -23,8 +23,8 @@ public class SpringMongoDbApplication {
 
 //		System.out.println(insert());
 
-		System.out.println(findByZipCodelastObject("4","9"));
-
+		
+		findByZipCodelastObject("4","9");
 
 	}
 
@@ -81,24 +81,24 @@ public class SpringMongoDbApplication {
 			throw new RuntimeException(e);
 		}
 	}
-	private static List<Document> findByZipCodelastObject(String filter1,String filter2){
+
+
+	private static void findByZipCodelastObject(String zipcode1, String zipcode2){
 		MongoClient mongoClient = MongoClients.create("mongodb://127.0.0.1:27017/?directConnection=true");
 		MongoDatabase db = mongoClient.getDatabase("pdpjava");
 
 		MongoCollection<Document> usersCollection = db.getCollection("users");
 
-		Bson filter = Filters.or(Filters.regex("zipcode", ".*"+filter1), Filters.regex("zipcode", ".*"+filter2));
+		Bson filter = Filters.or(Filters.regex("adress.zipcode", ".*"+zipcode1), Filters.regex("adress.zipcode", ".*"+zipcode2));
 
-		MongoCursor<Document> iterator = usersCollection.find(filter).iterator();
+		FindIterable<Document> documents = usersCollection.find(filter);
 
-		List<Document> documents = new ArrayList<>();
+		for (Document document : documents) {
 
-		while (iterator.hasNext()){
-			Document document = iterator.tryNext();
-			documents.add(document);
+			System.out.println(document);
+
 		}
 
-		return documents;
 	}
 
 }
