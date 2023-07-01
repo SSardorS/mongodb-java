@@ -5,7 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertManyResult;
+import com.mongodb.client.result.UpdateResult;
 import mongodb.uz.springMongoDb.document.Address;
 import mongodb.uz.springMongoDb.document.Users;
 import org.bson.Document;
@@ -24,8 +26,13 @@ public class SpringMongoDbApplication {
 //		System.out.println(insert());
 
 		
-		findByZipCodelastObject("4","9");
+//		findByZipCodelastObject("4","9");
 
+//		findGeoLatMinus();
+
+//		findCom();
+
+//		update(2, "hello");
 	}
 
 	private static boolean  insert(){
@@ -95,9 +102,61 @@ public class SpringMongoDbApplication {
 
 		for (Document document : documents) {
 
-			System.out.println(document);
+			System.out.println(document+"\n");
 
 		}
+
+	}
+
+	private static void findGeoLatMinus(){
+		MongoClient mongoClient = MongoClients.create("mongodb://127.0.0.1:27017/?directConnection=true");
+		MongoDatabase db = mongoClient.getDatabase("pdpjava");
+
+		MongoCollection<Document> usersCollection = db.getCollection("users");
+
+		Bson filter = Filters.regex("adress.geo.lat", "^-");
+
+		FindIterable<Document> documents = usersCollection.find(filter);
+
+		for (Document document : documents) {
+
+			System.out.println(document+"\n");
+
+		}
+
+	}
+
+	private static void findCom(){
+		MongoClient mongoClient = MongoClients.create("mongodb://127.0.0.1:27017/?directConnection=true");
+		MongoDatabase db = mongoClient.getDatabase("pdpjava");
+
+		MongoCollection<Document> usersCollection = db.getCollection("users");
+
+		Bson filter = Filters.regex("adress.geo.lat", ".*com");
+
+		FindIterable<Document> documents = usersCollection.find(filter);
+
+		for (Document document : documents) {
+
+			System.out.println(document+"\n");
+
+		}
+
+	}
+	private static void update(int id, String catchPhraseValue){
+		MongoClient mongoClient = MongoClients.create("mongodb://127.0.0.1:27017/?directConnection=true");
+		MongoDatabase db = mongoClient.getDatabase("pdpjava");
+
+		MongoCollection<Document> usersCollection = db.getCollection("users");
+
+		Bson filter = Filters.eq("id", id);
+
+		Bson set = Updates.set("company.catchPhrade", catchPhraseValue);
+
+		UpdateResult updateResult = usersCollection.updateOne(filter, set);
+
+		System.out.println("Update Result-> "+updateResult.wasAcknowledged());
+
 
 	}
 
